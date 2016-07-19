@@ -2,7 +2,16 @@ from bs4 import BeautifulSoup
 import requests
 
 class wiki_node(object):
+    """
+    This wiki_node represents a single article on Wikipedia. An article
+    typically contains links to other articles on Wikipedia.
+    It will have two attributes:
+        self.url          :  string url
+        self.child_nodes  :  list of strings, one url for each link
+                             contained in the body of the Wikipedia article
+    """
     def __init__(self, url):
+        self.url = url
         self.child_nodes = self.get_child_nodes(url)
 
     def get_child_nodes(self, url):
@@ -19,5 +28,7 @@ class wiki_node(object):
 
 if __name__ == '__main__':
     site = 'https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search'
-
     node = wiki_node(site)
+    print 'node: ', node
+    print 'node.url', node.url
+    print 'node.child_nodes', node.child_nodes
