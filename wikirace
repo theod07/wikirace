@@ -1,0 +1,7 @@
+#!/bin/bash
+clear
+
+JSON_OBJ="$@"
+
+echo $JSON_OBJ
+python ./IDDFS.py "$JSON_OBJ"
