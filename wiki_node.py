@@ -17,7 +17,7 @@ class wiki_node(object):
     def get_child_nodes(self, url):
         DOMAIN = 'https://en.wikipedia.org'
         r = requests.get(url)
-        soup = BeautifulSoup(r.content)
+        soup = BeautifulSoup(r.content, 'html.parser')
         # we're ignoring any links that appear in side navigation bar
         # and category footer.
         divs = soup.find_all(id='mw-content-text')
