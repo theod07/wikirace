@@ -92,10 +92,13 @@ def test_cases():
         print IDDFS(start, end3)
         print 'tdelta : ', time.time() - tstart
 
+def main():
+    json_obj = json.loads(sys.argv[1])
+    path = IDDFS(json_obj['start'], json_obj['end'])
+    json_obj['path'] = path
+    return json_obj
+
+
 if __name__ == '__main__':
 
-    print 'This is the name of the script: ', sys.argv[0]
-    print 'Number of arguments: ', len(sys.argv)
-
-    json_obj = json.loads(sys.argv[1])
-    print IDDFS(json_obj['start'], json_obj['end'])
+    print main()
