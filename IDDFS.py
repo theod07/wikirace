@@ -1,4 +1,5 @@
 from wiki_node import wiki_node as wnode
+from collections import Counter
 import itertools
 import time
 import json
@@ -10,14 +11,17 @@ def IDDFS(start, end):
     Reference:
     https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search#Algorithm
     """
+    route = Counter()
+    route[start] += len(route)
     for depth in itertools.count():
-        found = DLS([start], end, depth)
+        found = DLS(c, end, depth)
 
         if found:
             return found
 
 def DLS(route, end, depth):
     """
+    route is a counter object to take advantage of the constant lookup time of a dictionary, as well as capability to quickly search for max index of the route.
     DOCSTRING PLACEHOLDER
     Reference:
     https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search#Algorithm
@@ -25,19 +29,21 @@ def DLS(route, end, depth):
     if depth == 0:
         return
 
-    current = route[-1]
+    current = route.most_common(1)[0][0]
     if current == end:
         return route
 
     for child in wnode(current).child_nodes:
         if not child in route:
-            next_route = DLS(route + [child], end, depth-1)
+            route[child] += len(route)
+            next_route = DLS(route, end, depth-1)
             if next_route:
                 return next_route
 
     if depth < 0:
         return 'Depth cannot be negative.'
 
+    return
 
 def test_cases():
     """
