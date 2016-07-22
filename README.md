@@ -3,9 +3,9 @@
 ### Instructions
 This installation assumes that you have Python2.7 `pip` installed on your machine.
 Python dependencies are listed in requirements.txt.
-It's good practice to create a separate environment to install the required dependencies to avoid potential conflicts across different projects. `virtualenv` and Anaconda (`conda`) are both environment managers for Python, but have been known to conflict with each other.
+It's good practice to create a separate environment to install the required dependencies to avoid potential conflicts across different projects. `virtualenv` and Anaconda (`conda`) are both environment managers for Python, but have been known to conflict with each other. If you're not already using Anaconda, you'll probably want to use `virtualenv` because Anaconda is a relatively large package -- it installs many of Python's scientific computing libraries.
 
-To upgrade `pip` and install requirements:
+Once you're ready to go, you can upgrade `pip` and install requirements:
 ```
 pip install --upgrade pip
 pip install -r requirements.txt
