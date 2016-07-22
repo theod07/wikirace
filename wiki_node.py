@@ -23,7 +23,10 @@ class wiki_node(object):
         divs = soup.find_all(id='mw-content-text')
         a_tags = divs[0].find_all('a')
         # notice that we're only interested in links that begin with '/wiki/'
-        hrefs = [DOMAIN + tag['href'] for tag in a_tags if tag['href'].startswith('/wiki/')]
+        hrefs = {DOMAIN + tag['href'] for tag in a_tags if (
+                    tag['href'].startswith('/wiki/') and
+                    not tag['href'].startswith('/wiki/File:') and
+                    not tag['href'].startswith('/wiki/Special:'))}
         return hrefs
 
 if __name__ == '__main__':
