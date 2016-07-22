@@ -14,10 +14,11 @@ def IDDFS(start, end):
     route = Counter()
     route[start] += len(route)
     for depth in itertools.count():
-        found = DLS(c, end, depth)
+        path = DLS(route, end, depth)
 
-        if found:
-            return found
+        if path:
+            path = [i[0] for i in path.most_common(len(path))[::-1]]
+            return path
 
 def DLS(route, end, depth):
     """
@@ -30,13 +31,15 @@ def DLS(route, end, depth):
         return
 
     current = route.most_common(1)[0][0]
+    # print len(route), current
     if current == end:
         return route
 
     for child in wnode(current).child_nodes:
         if not child in route:
-            route[child] += len(route)
-            next_route = DLS(route, end, depth-1)
+            this_route = route.copy()
+            this_route[child] += len(route)
+            next_route = DLS(this_route, end, depth-1)
             if next_route:
                 return next_route
 
@@ -108,3 +111,4 @@ def main():
 if __name__ == '__main__':
 
     print main()
+    # test_cases()
