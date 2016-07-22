@@ -2,5 +2,6 @@
 
 JSON_OBJ="$@"
 
-OUTPUT=$(python ./IDDFS.py "$JSON_OBJ")
+python ./IDDFS.py "$JSON_OBJ"
+
 echo $OUTPUT
