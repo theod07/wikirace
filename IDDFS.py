@@ -14,11 +14,11 @@ def IDDFS(start, end):
     route = Counter()
     route[start] += len(route)
     for depth in itertools.count():
-        path = DLS(route, end, depth)
+        new_route = DLS(route, end, depth)
 
-        if path:
-            path = [i[0] for i in path.most_common(len(path))[::-1]]
-            return path
+        if new_route:
+            new_route = [i[0] for i in new_route.most_common()[::-1]]
+            return new_route
 
 def DLS(route, end, depth):
     """
@@ -37,11 +37,11 @@ def DLS(route, end, depth):
 
     for child in wnode(current).child_nodes:
         if not child in route:
-            this_route = route.copy()
-            this_route[child] += len(route)
-            next_route = DLS(this_route, end, depth-1)
-            if next_route:
-                return next_route
+            route_to_try = route.copy()
+            route_to_try[child] += len(route)
+            new_route = DLS(route_to_try, end, depth-1)
+            if new_route:
+                return new_route
 
     if depth < 0:
         return 'Depth cannot be negative.'
@@ -102,6 +102,9 @@ def test_cases():
         print 'tdelta : ', time.time() - tstart
 
 def main():
+    """
+
+    """
     json_obj = json.loads(sys.argv[1])
     path = IDDFS(json_obj['start'], json_obj['end'])
     json_obj['path'] = path
