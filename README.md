@@ -60,24 +60,18 @@ In general, the decision to use BFS or DFS to traverse a graph should take into 
 
 In Iterative Deepening DFS, we DFS to a set depth and increment the depth at each step. This guarantees that the shortest path will be found (if it exists).
 
-We created a class called `wiki_node` with two attributes:
-1. url - the url for the given Wikipedia article
-2. child_nodes - a list of url links contained in the article body
+We chose to query Wikipedia's mediawiki api using python's `requests` library, which allows us to get the articles that are linked from a given page.
 
-The article's HTML is retrieved through Python's `requests` library and parsed using `BeautifulSoup`'s `html.parser`. Links on the page were by filtering out tags that began with `/wiki/`. Additionally, we filtered out any links that contain `/wiki/File:` and `/wiki/Special:` because they do not add valuable nodes to our graph.
+The IDDFS function takes in two strings, start_url and end_url, which are the URLs of the articles, and calls the Depht-Limited Search (DLS) function at each incremental increase in depth. In theory we could increment forever until we find a search, but chose to limit the depth to nine by assuming articles are connected by 6 degrees of separation with a margin of 1.5. Once DLS finds the end node, IDDFS returns the traversed path.
 
-One article on Wikipedia may have duplicate links that point to the same page. To avoid keeping track of any duplicated pages, we store the href links (`child_nodes`) as a set. This has the combined benefit of constant time to look-up (check for inclusion) as well as constant time to add a new item. Note: a set does not necessarily maintain order of the input.
-
-The IDDFS function takes in two strings, start and end, which are the URLs of the articles, and calls the Depht-Limited Search (DLS) function for incremental increase in depth. Once DLS finds the end node, IDDFS returns the traversed path.
-
-The DLS function takes in three arguments: route (a Counter object), end (a string), and depth (an integer). It recursively calls DLS, decrementing depth each time and returns nothing until the current node matches the end node.
-
-Route is stored as a Counter object rather than a for its constant look up time. If a node has already appeared in our current route, we want to avoid exploring it again. The Counter's keys are the nodes and the values are the indices where the node appears in the route. Calling Counter's method `.most_common()` efficiently sorts the keys by value to reconstruct the route's correct sequence.
+The DLS function takes in three arguments: start (a string of the article title), end (a string of the article title), and depth (an integer limiting the depth of search). DLS continually explores child nodes in a Last-In-First-Out (LIFO) order. At each new node, the child nodes are returned in a set and we check whether the end-node appears in the set of child nodes. This is beneficial because checking whether an element is in a set is a fast operation.
 
 
 ### Improvements
-While this implementation will find a shortest path, it is impractical to run for two arbitrary start/end articles with unknown depth because of the time required to solve. To improve this, consider parallelizing the search process. We could try to multithread this on a single machine, but there may be rate limits imposed on sending requests to Wikipedia. We could consider introducing some stop time in between requests to Wikipedia as a workaround or include a try/except condition to handle any bad responses from Wikipedia. We could try any bad responses at a later time.
+While Iterative-deepening DFS is an improvement over BFS and DFS, it can be improved if we search in both directions at the same time. The search in the opposite direction would be symmetric where we would explore the parent nodes for a given article and store them in a set. Consider searching in the forward direction when depth is even and searching in the reverse direction when depth is odd until a path is found. The benefit of this bi-directional search is that the rate that we discover new nodes to explore is significantly less than in the one-directional search (assuming that the number of links on a page is constant).
 
-Rather than running the risk of being blocked from Wikipedia from a single IP, it would be most beneficial to perform a distributed parallelized search if possible, where one machine/process searches for child nodes of itself and farms the search for each child node to separate machines/processes.
+The bi-directional search will decrease the amount of computation required, but will require extra functionality: we would need a way to check whether the paths that we have explored in both directions have met each other. One idea would be to treat the fringe nodes as two sets (parents and children). An "AND" operation on the two sets at the end of each iteration would identify any nodes that connect two paths.
 
-We've also assumed that the input will have valid URLs for Wikipedia articles. To make this more robust, consider including a helper function which validates each URL and/or website. Additionally, we have chosen to filter out href links that look like `/wiki/File:` and `/wiki/Special:` because they lead to pages that do not help our search. We can improve the implementation by finding other URLs that systematically do not add value to the search.
+The function `get_children()` includes a try/except handle `KeyError`s when they occur. Future improvements to this implementation may benefit from understanding the reason for `KeyError` and handle the exception more intelligently/robustly.
+
+Function `get_children()` is called repeatedly throughout this implementation, one article at a time. Future improvements may consider querying the API for multiple articles at a time and caching the results, which may improve performance as well as reduce loading to API server. Further testing required.
